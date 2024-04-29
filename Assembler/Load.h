@@ -10,6 +10,7 @@ class Load
 public:
 
 	string BinaryOperands(int RegNumber);
+	string ImmediateValueBinary(int Imm);
 	void Execute(bool read);
 };
 
