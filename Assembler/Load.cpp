@@ -5,13 +5,12 @@
 #include<iostream>
 using namespace std;
 
-void Load ::Execute(bool read)
+void Load::Execute(bool read)
 {
-	
-	string instruction; //instruction
+
 	string line;
 	int cnt; // count of figures
-	string opcode; 
+	string opcode;
 	string operand1;
 	string operand2;
 	string operand3;
@@ -20,7 +19,7 @@ void Load ::Execute(bool read)
 	ofstream outFile("Out.txt", ios::out);
 	if (Infile.fail()) //if file name is invaild
 	{
-		cout <<"File didn't successfully open";
+		cout << "File didn't successfully open";
 		return;
 	}
 	else
@@ -28,7 +27,8 @@ void Load ::Execute(bool read)
 		cout << "File Opened";
 
 		while (!Infile.eof())
-		{	
+		{
+			string instruction; //instruction
 			Infile >> instruction;
 			std::string toUpperCase(instruction);
 			if (instruction == "SWAP" || instruction == "ADD" || instruction == "XOR"
@@ -50,6 +50,7 @@ void Load ::Execute(bool read)
 					Infile.get(temp1);
 				}
 				Infile.get(temp2);
+				
 				operand1 = std::string(1, temp1) + std::string(1, temp2);//operand 1 taken
 				Infile.get(temp1);
 				while ((temp1 == ' ' || temp1 == ','))
@@ -64,18 +65,6 @@ void Load ::Execute(bool read)
 
 				{
 					opcode = "001000";
-					outFile<<opcode;
-				}
-				else if(instruction=="SWAP")
-				{
-					opcode = "001001";
-					outFile << opcode;
-				}
-				else if (instruction == "ADDI")
-				{
-					opcode = "101010";
-				}
-				else if (instruction == "SUBI")
 
 				{
 					opcode = "101011";
@@ -111,7 +100,6 @@ void Load ::Execute(bool read)
 
 	   //// Read fig count
 		Infile >> cnt;
-		outFile.close();
 		//identify figures
 		/*for (int i = 0; i < cnt; i++)
 		{
