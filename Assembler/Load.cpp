@@ -306,42 +306,42 @@ void Load ::Execute(bool read)
 				Infile.get(temp2);
 				operand1 = std::string(1, temp1) + std::string(1, temp2);//operand 1 taken
 				
-				if (operand1 == "R0")
+				if (operand1 == "R0" || operand1 == "r0")
 				{
 					Outinstruction = opcode + "0000000000" ;
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R1")
+				else if (operand1 == "R1" || operand1 == "r1")
 				{
 					Outinstruction = opcode + "0010000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R2")
+				else if (operand1 == "R2" || operand1 == "r2")
 				{
 					Outinstruction = opcode + "0100000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R3")
+				else if (operand1 == "R3" || operand1 == "r3")
 				{
 					Outinstruction = opcode + "0110000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R4")
+				else if (operand1 == "R4" || operand1 == "r4")
 				{
 					Outinstruction = opcode + "1000000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R5")
+				else if (operand1 == "R5" || operand1 == "r5")
 				{
 					Outinstruction = opcode + "1010000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R6")
+				else if (operand1 == "R6" || operand1 == "r6")
 				{
 					Outinstruction = opcode + "1100000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R7")
+				else if (operand1 == "R7" || operand1 == "r7")
 				{
 					Outinstruction = opcode + "1110000000";
 					outFile << Outinstruction;

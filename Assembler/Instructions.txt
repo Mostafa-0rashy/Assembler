@@ -1,9 +1,1 @@
-INC R0
-DEC R1
-OUT R4
-IN R3
-RESET
-INT
-RTI
-RET
-NOP
+inc r0
