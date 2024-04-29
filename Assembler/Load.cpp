@@ -24,10 +24,10 @@ std::string toUpperCase(const std::string& str)
 {
 	std::string result = str;
 
-	transform(result.begin(), result.end(), result.begin(), [](unsigned char c) {
+	transform(result.begin(), result.end(), result.begin(), [](unsigned char c) 
+	{
 		return std::toupper(c);
-		});
-
+	});
 	return result;
 }
 string Load ::ImmediateValueBinary(int Imm) {
@@ -228,7 +228,6 @@ void Load::Execute(bool read)
 			else if (instruction == "MOV" || instruction == "SWAP" || instruction == "CMP" || instruction == "LDM" || instruction == "STD")
 			{
 				if (instruction == "MOV")
-
 				{
 					opcode = "001000";
 					outFile << opcode;
@@ -313,7 +312,9 @@ void Load::Execute(bool read)
 
 			}
 			//////////////////////ONE OPERAND//////////////////////////////
-			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" || instruction == "DEC" || instruction == "OUT" || instruction == "IN")
+			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" 
+					|| instruction == "DEC" || instruction == "OUT" || instruction == "IN" || instruction == "POP" || instruction == "PUSH" 
+					|| instruction == "PROTECT" || instruction == "FREE")
 			{
 				//////////////Decoding Instrcution///////////////
 				if (instruction == "JZ")
@@ -351,6 +352,22 @@ void Load::Execute(bool read)
 				else if (instruction == "IN")
 				{
 					opcode = "000111";
+				}
+				else if (instruction == "POP")
+				{
+					opcode = "010001";
+				}
+				else if (instruction == "PUSH")
+				{
+					opcode = "010000";
+				}
+				else if (instruction == "PROTECT")
+				{
+					opcode = "010101";
+				}
+				else if (instruction == "FREE")
+				{
+					opcode = "010110";
 				}
 				char temp1;
 				char temp2;
@@ -406,10 +423,6 @@ void Load::Execute(bool read)
 			////////////////////ZERO OPERAND//////////////////////////////
 			else if (instruction == "NOP" || instruction == "RET" || instruction == "RTI" || instruction == "RESET" || instruction == "INT")
 			{
-
-
-
-
 				if (instruction == "NOP")
 				{
 					opcode = "000000";
@@ -437,30 +450,4 @@ void Load::Execute(bool read)
 			outFile << '\n';
 		}
 	}
-}
-
-//reads fill clr
-	   ////////////Set draw color
-
-	   ////////////Set fill color
-
-	   //// Read fig count
-		//Infile >> cnt;
-		//outFile.close();
-		//identify figures
-		/*for (int i = 0; i < cnt; i++)
-		{
-			Infile >> type;
-			if (type == "Rectangle")
-				myfig = new CRectangle;
-			if (type == "Circle")
-				myfig = new CCircle;
-			if (type == "Triangle")
-				myfig = new CTriangle;
-			if (type == "Square")
-				myfig = new CSquare;
-			if (type == "Hexagon")
-				myfig = new CHex;
-			myfig->Load(Infile);
-			pManager->AddF(myfig);
-		}*/
+};
