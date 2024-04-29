@@ -11,20 +11,13 @@ string Load::BinaryOperands(int RegNumber) {
 	if (RegNumber == 0) {
 		binary = "000";
 	}
-	else {
-		while (RegNumber > 0) {
-			binary = std::to_string(RegNumber % 2) + binary;
-			RegNumber /= 2;
-		}
-		if (binary.size()==2)
-		{
-			binary = "0" + binary;
-		}
-		else if (binary.size() == 1)
-		{
-			binary = "00" + binary;
+	else if (RegNumber>0) {
+		for (int i = 2; i >= 0; i--) {
+			binary = std::to_string(RegNumber & 1) + binary;
+			RegNumber >>= 1;
 		}
 	}
+	
 	return binary;
 }
 std::string toUpperCase(const std::string& str)
@@ -91,7 +84,7 @@ void Load::Execute(bool read)
 			Infile >> instruction;
 			instruction = toUpperCase(instruction);
 			if (instruction == "ADD" || instruction == "XOR"
-				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD" || instruction == "STD")
+				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD")
 				//////////////// THREE OPERANDS/////////////////////
 			{
 				//////////////Decoding Instrcution///////////////
@@ -286,37 +279,66 @@ void Load::Execute(bool read)
 					outFile << "0000";
 				}
 
-
-				char temp1;
-				char temp2;
-				Infile.get(temp1);
-				while (temp1 == ' ')
+				if (instruction == "LDM")
 				{
+					char temp1;
+					char temp2;
+					Infile.get(temp1);
+					while (temp1 == ' ')
+					{
+
+						Infile.get(temp1);
+					}
+					Infile.get(temp2);
+					///////////Taking Operand 1//////////////////
+					operand1 = BinaryOperands(temp2 - '0');
+					outFile << operand1;
+					outFile << "0000000";
+					outFile << "\n";
+
+					string imm1;
+					Infile.get(temp1);
+					Infile >> imm1;
+					imm1 = ImmediateValueBinary(std::stoi(imm1));
+					outFile << imm1;
+				}
+				else
+				{
+					char temp1;
+					char temp2;
+					Infile.get(temp1);
+					while (temp1 == ' ')
+					{
+
+						Infile.get(temp1);
+					}
+					Infile.get(temp2);
+					///////////Taking Operand 1//////////////////
+					operand1 = BinaryOperands(temp2 - '0');
+					outFile << operand1;
 
 					Infile.get(temp1);
+					while ((temp1 == ' ' || temp1 == ','))
+					{
+
+						Infile.get(temp1);
+					}
+
+
+					Infile.get(temp2);
+
+					///////////////Taking Operand 2//////////////
+
+					operand2 = BinaryOperands(temp2 - '0');
+					outFile << operand2;
 				}
-				Infile.get(temp2);
-				///////////Taking Operand 1//////////////////
-				operand1 = BinaryOperands(temp2 - '0');
-				outFile << operand1;
+					if (instruction != "CMP" || instruction!="LDM")
+					{
+						outFile << "0000";
+					}
 
-				Infile.get(temp1);
-				while ((temp1 == ' ' || temp1 == ','))
-				{
+				
 
-					Infile.get(temp1);
-				}
-
-				Infile.get(temp2);
-
-				///////////////Taking Operand 2//////////////
-
-				operand2 = BinaryOperands(temp2 - '0');
-				outFile << operand2;
-
-				{
-					opcode = "101011";
-				}
 			}
 			//////////////////////ONE OPERAND//////////////////////////////
 			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" 
@@ -453,6 +475,7 @@ void Load::Execute(bool read)
 				Outinstruction = opcode + "0000000000";
 				outFile << Outinstruction;
 			}
+
 			outFile << '\n';
 		}
 	}
