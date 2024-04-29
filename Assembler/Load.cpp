@@ -15,56 +15,44 @@ string Load::BinaryOperands(int RegNumber) {
 			binary = std::to_string(RegNumber % 2) + binary;
 			RegNumber /= 2;
 		}
+		if (binary.size()==2)
+		{
+			binary = "0" + binary;
+		}
+		else if (binary.size() == 1)
+		{
+			binary = "00" + binary;
+		}
 	}
 	return binary;
 }
 
 string Load ::ImmediateValueBinary(int Imm) {
-	if (Imm == 0) {
-		return "0";
-	}
-
 	std::string binary = "";
-	bool negative = false;
 
-	// Handle negative numbers
+	// If the number is negative, convert it to its 2's complement representation
 	if (Imm < 0) {
-		negative = true;
-		Imm = -Imm; // Make the number positive
+		Imm = (1 << 15) + Imm; // Convert to positive and set the MSB to 1
 	}
 
-	// Convert to binary using two's complement
-	while (Imm > 0) {
-		binary = (Imm % 2 == 0 ? "0" : "1") + binary;
-		Imm /= 2;
+	// Handle the case when the number is 0
+	if (Imm == 0) {
+		binary = "0";
+	}
+	else {
+		while (Imm > 0) {
+			binary = std::to_string(Imm % 2) + binary;
+			Imm /= 2;
+		}
 	}
 
-	// Add leading zeros to make it 8 bits (assuming 8-bit signed binary)
-	while (binary.length() < 8) {
+	// Pad with zeros to ensure the binary string is 16 bits long
+	while (binary.length() < 16) {
 		binary = "0" + binary;
-	}
-
-	// Invert bits if negative
-	if (negative) {
-		// Invert bits
-		for (char& bit : binary) {
-			bit = (bit == '0' ? '1' : '0');
-		}
-		// Add 1 to the binary number
-		for (int i = binary.length() - 1; i >= 0; --i) {
-			if (binary[i] == '0') {
-				binary[i] = '1';
-				break;
-			}
-			else {
-				binary[i] = '0';
-			}
-		}
 	}
 
 	return binary;
 }
-
 
 
 
@@ -97,7 +85,7 @@ void Load ::Execute(bool read)
 			Infile >> instruction;
 			std::string toUpperCase(instruction);
 			if (instruction == "SWAP" || instruction == "ADD" || instruction == "XOR"
-				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD")
+				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD" || instruction == "STD")
 				//////////////// THREE OPERANDS/////////////////////
 			{
 				//////////////Decoding Instrcution///////////////
@@ -148,6 +136,12 @@ void Load ::Execute(bool read)
 					opcode = "110011";
 					outFile << opcode;
 
+				}
+				else if (instruction == "STD") {
+
+					opcode = "110100";
+					outFile << opcode;
+
 				};
 
 
@@ -166,28 +160,14 @@ void Load ::Execute(bool read)
 				outFile << operand1;
 
 
+
 				if (instruction == "ADDI" || instruction == "SUBI")
 				{				
 
 					//////////////Reading Immediate value///////////////
 
-
-					char immValueint;
-					Infile.get(immValueint);
-					while (immValueint == ' ' || immValueint == ',')
-					{
-
-						Infile.get(immValueint);
-					};
-					immValue = std::string(1, immValueint);
-					string immvaluerest;
-					Infile >> immvaluerest;
-					immValue = immValue + immvaluerest;
-					immValue = ImmediateValueBinary(std::stoi(immValue));
-
-				}
-				else if (instruction == "LDD")
-				{
+					outFile << "0000000";
+					outFile << endl;
 					char immValueint;
 					Infile.get(immValueint);
 					while (immValueint == ' ' || immValueint == ',')
@@ -201,9 +181,53 @@ void Load ::Execute(bool read)
 					immValue = immValue + immvaluerest;
 					immValue = ImmediateValueBinary(std::stoi(immValue));
 					outFile << immValue;
+					outFile << endl;
+
+
 				}
-				else
+				else if (instruction == "LDD" || instruction == "STD")
 				{
+
+
+
+					//////////////Reading Immediate value///////////////
+
+					char immValueint;
+					Infile.get(immValueint);
+					while (immValueint == ' ' || immValueint == ',')
+					{
+
+						Infile.get(immValueint);
+					};
+					immValue = std::string(1, immValueint);
+					string immvaluerest;
+					Infile >> immvaluerest;
+					immValue = immValue + immvaluerest;
+
+
+					//////////////Reading Operand2///////////////
+					Infile.get(temp1);
+					while ((temp1 == ' ' || temp1 == '(' || temp1 == ','))
+					{
+
+						Infile.get(temp1);
+					}
+
+					Infile.get(temp2);
+					operand2 = BinaryOperands(temp2 - '0');
+					outFile << operand2 <<"0000";
+					outFile << endl;
+
+
+
+					immValue = ImmediateValueBinary(std::stoi(immValue));
+					outFile << immValue;
+					outFile << endl;
+					break;
+				}
+				else 
+				{
+					//////////////Reading Operand2///////////////
 					Infile.get(temp1);
 					while ((temp1 == ' ' || temp1 == ','))
 					{
@@ -214,6 +238,9 @@ void Load ::Execute(bool read)
 					Infile.get(temp2);
 					operand2 = BinaryOperands(temp2 - '0');
 					outFile << operand2;
+
+					//////////////Reading Operand3///////////////
+
 					Infile.get(temp1);
 					while ((temp1 == ' ' || temp1 == ','))
 					{
@@ -223,7 +250,8 @@ void Load ::Execute(bool read)
 
 					Infile.get(temp2);
 					operand3 = BinaryOperands(temp2 - '0');
-					outFile << operand3;
+					outFile << operand3 <<"0";
+					outFile << endl;
 				}
 			}
 			////////////////////////TWO OPERAND////////////////////////////////
