@@ -5,6 +5,70 @@
 #include<iostream>
 using namespace std;
 
+string Load::BinaryOperands(int RegNumber) {
+	string binary = "";
+	if (RegNumber == 0) {
+		binary = "000";
+	}
+	else {
+		while (RegNumber > 0) {
+			binary = std::to_string(RegNumber % 2) + binary;
+			RegNumber /= 2;
+		}
+	}
+	return binary;
+}
+
+string Load ::ImmediateValueBinary(int Imm) {
+	if (Imm == 0) {
+		return "0";
+	}
+
+	std::string binary = "";
+	bool negative = false;
+
+	// Handle negative numbers
+	if (Imm < 0) {
+		negative = true;
+		Imm = -Imm; // Make the number positive
+	}
+
+	// Convert to binary using two's complement
+	while (Imm > 0) {
+		binary = (Imm % 2 == 0 ? "0" : "1") + binary;
+		Imm /= 2;
+	}
+
+	// Add leading zeros to make it 8 bits (assuming 8-bit signed binary)
+	while (binary.length() < 8) {
+		binary = "0" + binary;
+	}
+
+	// Invert bits if negative
+	if (negative) {
+		// Invert bits
+		for (char& bit : binary) {
+			bit = (bit == '0' ? '1' : '0');
+		}
+		// Add 1 to the binary number
+		for (int i = binary.length() - 1; i >= 0; --i) {
+			if (binary[i] == '0') {
+				binary[i] = '1';
+				break;
+			}
+			else {
+				binary[i] = '0';
+			}
+		}
+	}
+
+	return binary;
+}
+
+
+
+
+
 void Load ::Execute(bool read)
 {
 	string line;
@@ -39,40 +103,49 @@ void Load ::Execute(bool read)
 				if (instruction == "SWAP") {
 
 					opcode = "001001";
+					outFile << opcode;
 				}
 				else if (instruction == "ADD") {
 
 					opcode = "001010";
+					outFile << opcode;
 				}
 				else if (instruction == "XOR") {
 
 					opcode = "001010";
+					outFile << opcode;
 				}
 				else if (instruction == "ADDI") {
 
 					opcode = "101010";
+					outFile << opcode;
 				}
 				else if (instruction == "SUB") {
 
 					opcode = "001011";
+					outFile << opcode;
 				}
 				else if (instruction == "SUBI") {
 
 					opcode = "101011";
+					outFile << opcode;
 				}
 				else if (instruction == "AND") {
 
 					opcode = "001100";
+					outFile << opcode;
 
 				}
 				else if (instruction == "OR") {
 
 					opcode = "001101";
+					outFile << opcode;
 
 				}
 				else if (instruction == "LDD") {
 
 					opcode = "110011";
+					outFile << opcode;
 
 				};
 				//////////////Reading Operand1///////////////
@@ -85,7 +158,9 @@ void Load ::Execute(bool read)
 					Infile.get(temp1);
 				};
 				Infile.get(temp2);
-				operand1 = std::string(1, temp1) + std::string(1, temp2);//operand 1 taken
+				operand1 = BinaryOperands(temp2 - '0');
+				outFile << operand1;
+
 
 				if (instruction == "ADDI" || instruction == "SUBI")
 				{				
@@ -104,6 +179,8 @@ void Load ::Execute(bool read)
 					string immvaluerest;
 					Infile >> immvaluerest;
 					immValue = immValue + immvaluerest;
+					immValue = ImmediateValueBinary(std::stoi(immValue));
+
 				}
 				else if (instruction == "LDD")
 				{
@@ -118,6 +195,8 @@ void Load ::Execute(bool read)
 					string immvaluerest;
 					Infile >> immvaluerest;
 					immValue = immValue + immvaluerest;
+					immValue = ImmediateValueBinary(std::stoi(immValue));
+					outFile << immValue;
 				}
 				else
 				{
@@ -129,7 +208,8 @@ void Load ::Execute(bool read)
 					}
 
 					Infile.get(temp2);
-					operand2 = std::string(1, temp1) + std::string(1, temp2);
+					operand2 = BinaryOperands(temp2 - '0');
+					outFile << operand2;
 					Infile.get(temp1);
 					while ((temp1 == ' ' || temp1 == ','))
 					{
@@ -138,7 +218,8 @@ void Load ::Execute(bool read)
 					}
 
 					Infile.get(temp2);
-					operand3 = std::string(1, temp1) + std::string(1, temp2);
+					operand3 = BinaryOperands(temp2 - '0');
+					outFile << operand3;
 				}
 			}
 			////////////////////////TWO OPERAND////////////////////////////////
