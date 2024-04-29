@@ -90,24 +90,19 @@ void Load::Execute(bool read)
 			string instruction; //instruction
 			Infile >> instruction;
 			instruction = toUpperCase(instruction);
-			if (instruction == "SWAP" || instruction == "ADD" || instruction == "XOR"
+			if (instruction == "ADD" || instruction == "XOR"
 				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD" || instruction == "STD")
 				//////////////// THREE OPERANDS/////////////////////
 			{
 				//////////////Decoding Instrcution///////////////
-				if (instruction == "SWAP") {
-
-					opcode = "001001";
-					outFile << opcode;
-				}
-				else if (instruction == "ADD") {
+				if (instruction == "ADD") {
 
 					opcode = "001010";
 					outFile << opcode;
 				}
 				else if (instruction == "XOR") {
 
-					opcode = "001010";
+					opcode = "001110";
 					outFile << opcode;
 				}
 				else if (instruction == "ADDI") {
@@ -184,7 +179,6 @@ void Load::Execute(bool read)
 					immValue = immValue + immvaluerest;
 					immValue = ImmediateValueBinary(std::stoi(immValue));
 					outFile << immValue;
-					outFile << endl;
 
 
 				}
@@ -203,9 +197,14 @@ void Load::Execute(bool read)
 						Infile.get(immValueint);
 					};
 					immValue = std::string(1, immValueint);
-					string immvaluerest;
-					Infile >> immvaluerest;
-					immValue = immValue + immvaluerest;
+					char immvaluerest;
+					Infile.get(immvaluerest);
+					while (immvaluerest != '(')
+					{
+
+						immValue = immValue + std::string(1, immvaluerest);
+						Infile.get(immvaluerest);
+					}
 
 
 					//////////////Reading Operand2///////////////
@@ -225,8 +224,13 @@ void Load::Execute(bool read)
 
 					immValue = ImmediateValueBinary(std::stoi(immValue));
 					outFile << immValue;
-					outFile << endl;
-					break;
+
+					Infile.get(temp1);
+					while ((temp1 == ' ' || temp1 == ')'))
+					{
+
+						Infile.get(temp1);
+					}
 				}
 				else 
 				{
@@ -254,7 +258,6 @@ void Load::Execute(bool read)
 					Infile.get(temp2);
 					operand3 = BinaryOperands(temp2 - '0');
 					outFile << operand3 <<"0";
-					outFile << endl;
 				}
 			}
 			////////////////////////TWO OPERAND////////////////////////////////
