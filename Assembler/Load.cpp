@@ -3,6 +3,7 @@
 #include<fstream>
 #include <string>
 #include<iostream>
+#include <algorithm>
 using namespace std;
 
 string Load::BinaryOperands(int RegNumber) {
@@ -18,7 +19,16 @@ string Load::BinaryOperands(int RegNumber) {
 	}
 	return binary;
 }
+std::string toUpperCase(const std::string& str)
+{
+	std::string result = str;
 
+	transform(result.begin(), result.end(), result.begin(), [](unsigned char c) {
+		return std::toupper(c);
+		});
+
+	return result;
+}
 string Load ::ImmediateValueBinary(int Imm) {
 	if (Imm == 0) {
 		return "0";
@@ -95,7 +105,7 @@ void Load ::Execute(bool read)
 		{
 			string instruction; //instruction
 			Infile >> instruction;
-			std::string toUpperCase(instruction);
+			instruction = toUpperCase(instruction);
 			if (instruction == "SWAP" || instruction == "ADD" || instruction == "XOR"
 				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD")
 				//////////////// THREE OPERANDS/////////////////////
@@ -229,6 +239,31 @@ void Load ::Execute(bool read)
 			////////////////////////TWO OPERAND////////////////////////////////
 			else if (instruction == "MOV" || instruction == "SWAP" || instruction == "CMP" || instruction == "LDM" || instruction == "STD")
 			{
+				if (instruction == "MOV")
+
+				{
+					opcode = "001000";
+					outFile << opcode;
+				}
+				else if (instruction == "SWAP")
+				{
+					opcode = "001001";
+					outFile << opcode;
+				}
+				else if (instruction == "LDM")
+				{
+					opcode = "110010";
+					outFile << opcode;
+
+				}
+				else if (instruction == "CMP")
+				{
+					opcode = "001111";
+					outFile << opcode;
+					outFile << "0000";
+				}
+
+
 				char temp1;
 				char temp2;
 				Infile.get(temp1);
@@ -238,8 +273,10 @@ void Load ::Execute(bool read)
 					Infile.get(temp1);
 				}
 				Infile.get(temp2);
-				
-				operand1 = std::string(1, temp1) + std::string(1, temp2);//operand 1 taken
+				///////////Taking Operand 1//////////////////
+				operand1 = BinaryOperands(temp2 - '0');
+				outFile << operand1;
+
 				Infile.get(temp1);
 				while ((temp1 == ' ' || temp1 == ','))
 				{
@@ -248,19 +285,13 @@ void Load ::Execute(bool read)
 				}
 
 				Infile.get(temp2);
-				operand2 = std::string(1, temp1) + std::string(1, temp2);
-				if (instruction == "MOV")
 
-				{
-					opcode = "001000";
+				///////////////Taking Operand 2//////////////
 
-				{
-					opcode = "101011";
-				}
-
+				operand2 = BinaryOperands(temp2 - '0');
+				outFile << operand2;
 
 			}
-
 			//////////////////////ONE OPERAND//////////////////////////////
 			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "INT" || instruction == "NEG" || instruction == "NOT"
 
@@ -279,6 +310,7 @@ void Load ::Execute(bool read)
 
 
 			}
+			outFile<<"\n";
 
 		}
 	}	//reads fill clr
