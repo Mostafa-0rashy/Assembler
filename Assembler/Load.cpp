@@ -32,26 +32,33 @@ std::string toUpperCase(const std::string& str)
 }
 string Load ::ImmediateValueBinary(int Imm) {
 	std::string binary = "";
-
-	// If the number is negative, convert it to its 2's complement representation
-	if (Imm < 0) {
-		Imm = (1 << 15) + Imm; // Convert to positive and set the MSB to 1
-	}
-
+	int Immabs = std::abs(Imm);
 	// Handle the case when the number is 0
-	if (Imm == 0) {
+	if (Immabs == 0) {
 		binary = "0";
 	}
 	else {
-		while (Imm > 0) {
-			binary = std::to_string(Imm % 2) + binary;
-			Imm /= 2;
+		while (Immabs > 0) {
+			binary = std::to_string(Immabs % 2) + binary;
+			Immabs /= 2;
 		}
 	}
 
 	// Pad with zeros to ensure the binary string is 16 bits long
-	while (binary.length() < 16) {
+	while (binary.length() < 15) {
 		binary = "0" + binary;
+	}
+	if (binary.length() == 15)
+	{
+		if (Imm> 0)
+		{
+			binary = "0" + binary;
+		}
+		else if (Imm < 0)
+		{
+			binary = "1" + binary;
+		}
+
 	}
 
 	return binary;
@@ -60,7 +67,6 @@ string Load ::ImmediateValueBinary(int Imm) {
 void Load::Execute(bool read)
 {
 	string line;
-	int cnt; // count of figures
 	string opcode;
 	string operand1;
 	string operand2;
@@ -84,7 +90,7 @@ void Load::Execute(bool read)
 			Infile >> instruction;
 			instruction = toUpperCase(instruction);
 			if (instruction == "ADD" || instruction == "XOR"
-				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD")
+				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD" || instruction == "STD")
 				//////////////// THREE OPERANDS/////////////////////
 			{
 				//////////////Decoding Instrcution///////////////
@@ -223,6 +229,9 @@ void Load::Execute(bool read)
 					{
 
 						Infile.get(temp1);
+						if (Infile.eof()) {
+							break;
+						}
 					}
 				}
 				else 
@@ -276,7 +285,7 @@ void Load::Execute(bool read)
 				{
 					opcode = "001111";
 					outFile << opcode;
-					outFile << "0000";
+					outFile << "000";
 				}
 
 				if (instruction == "LDM")
@@ -332,10 +341,21 @@ void Load::Execute(bool read)
 					operand2 = BinaryOperands(temp2 - '0');
 					outFile << operand2;
 				}
-					if (instruction != "CMP" || instruction!="LDM")
+				 
+				   if (instruction != "LDM")
+				   {
+					
+				    if (instruction != "CMP")
 					{
 						outFile << "0000";
 					}
+					else
+					{
+					
+					outFile << "0";
+					}
+				   //do nothing
+				   }
 
 				
 
