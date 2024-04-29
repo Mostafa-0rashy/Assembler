@@ -1,2 +1,2 @@
-MOV R0 , R1
-Mov R1,R2
+push R5
+POP R3
