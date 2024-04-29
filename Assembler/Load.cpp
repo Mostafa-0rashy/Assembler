@@ -5,6 +5,23 @@
 #include<iostream>
 using namespace std;
 
+string Load::BinaryOperands(int RegNumber) {
+	string binary = "";
+	if (RegNumber == 0) {
+		binary = "000";
+	}
+	else {
+		while (RegNumber > 0) {
+			binary = std::to_string(RegNumber % 2) + binary;
+			RegNumber /= 2;
+		}
+	}
+	return binary;
+}
+
+
+
+
 void Load ::Execute(bool read)
 {
 	
@@ -40,40 +57,49 @@ void Load ::Execute(bool read)
 				if (instruction == "SWAP") {
 
 					opcode = "001001";
+					outFile << opcode;
 				}
 				else if (instruction == "ADD") {
 
 					opcode = "001010";
+					outFile << opcode;
 				}
 				else if (instruction == "XOR") {
 
 					opcode = "001010";
+					outFile << opcode;
 				}
 				else if (instruction == "ADDI") {
 
 					opcode = "101010";
+					outFile << opcode;
 				}
 				else if (instruction == "SUB") {
 
 					opcode = "001011";
+					outFile << opcode;
 				}
 				else if (instruction == "SUBI") {
 
 					opcode = "101011";
+					outFile << opcode;
 				}
 				else if (instruction == "AND") {
 
 					opcode = "001100";
+					outFile << opcode;
 
 				}
 				else if (instruction == "OR") {
 
 					opcode = "001101";
+					outFile << opcode;
 
 				}
 				else if (instruction == "LDD") {
 
 					opcode = "110011";
+					outFile << opcode;
 
 				};
 
