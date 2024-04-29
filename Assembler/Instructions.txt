@@ -1,1 +1,1 @@
-MOV R0,R1
+ADDI R0,15
