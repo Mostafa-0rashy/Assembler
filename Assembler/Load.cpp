@@ -1,9 +1,4 @@
 #include "Load.h"
-#include <istream>
-#include<fstream>
-#include <string>
-#include<iostream>
-using namespace std;
 
 string Load::BinaryOperands(int RegNumber) {
 	string binary = "";
@@ -64,10 +59,6 @@ string Load ::ImmediateValueBinary(int Imm) {
 
 	return binary;
 }
-
-
-
-
 
 void Load ::Execute(bool read)
 {
@@ -266,7 +257,7 @@ void Load ::Execute(bool read)
 				}
 			}
 			//////////////////////ONE OPERAND//////////////////////////////
-			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "INT" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" || instruction == "DEC" || instruction == "OUT" || instruction == "IN")
+			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" || instruction == "DEC" || instruction == "OUT" || instruction == "IN")
 			{
 				//////////////Decoding Instrcution///////////////
 				if (instruction == "JZ")
@@ -280,10 +271,6 @@ void Load ::Execute(bool read)
 				else if (instruction == "CALL")
 				{
 					opcode = "011010";
-				}
-				else if (instruction == "INT")
-				{
-					opcode = "111000";
 				}
 				else if (instruction == "NEG")
 				{
@@ -361,53 +348,32 @@ void Load ::Execute(bool read)
 				}
 			}
 			////////////////////ZERO OPERAND//////////////////////////////
-			else if (instruction == "NOP" || instruction == "RET" || instruction == "RTI" || instruction == "RESET")
+			else if (instruction == "NOP" || instruction == "RET" || instruction == "RTI" || instruction == "RESET" || instruction == "INT" )
 			{
 				if (instruction == "NOP")
 				{
-					opcode = "011000";
+					opcode = "000000";
 				}
 				else if (instruction == "RET")
 				{
-					opcode = "011001";
+					opcode = "011011";
 				}
 				else if (instruction == "RTI")
 				{
-					opcode = "011010";
+					opcode = "011100";
 				}
 				else if (instruction == "RESET")
+				{
+					opcode = "111111";
+				}
+				else if (instruction == "INT")
 				{
 					opcode = "111000";
 				}
 				Outinstruction = opcode + "0000000000";
 				outFile << Outinstruction;
 			}
+			outFile << '\n';
 		}
 	}
 };	
-
-//reads fill clr
-	   ////////////Set draw color
-
-	   ////////////Set fill color
-
-	   //// Read fig count
-		//Infile >> cnt;
-		//outFile.close();
-		//identify figures
-		/*for (int i = 0; i < cnt; i++)
-		{
-			Infile >> type;
-			if (type == "Rectangle")
-				myfig = new CRectangle;
-			if (type == "Circle")
-				myfig = new CCircle;
-			if (type == "Triangle")
-				myfig = new CTriangle;
-			if (type == "Square")
-				myfig = new CSquare;
-			if (type == "Hexagon")
-				myfig = new CHex;
-			myfig->Load(Infile);
-			pManager->AddF(myfig);
-		}*/
