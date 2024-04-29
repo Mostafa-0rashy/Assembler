@@ -75,10 +75,6 @@ string Load ::ImmediateValueBinary(int Imm) {
 	return binary;
 }
 
-
-
-
-
 void Load ::Execute(bool read)
 {
 	string line;
@@ -292,7 +288,7 @@ void Load ::Execute(bool read)
 				}
 			}
 			//////////////////////ONE OPERAND//////////////////////////////
-			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "INT" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" || instruction == "DEC" || instruction == "OUT" || instruction == "IN")
+			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" || instruction == "DEC" || instruction == "OUT" || instruction == "IN")
 			{
 				//////////////Decoding Instrcution///////////////
 				if (instruction == "JZ")
@@ -306,10 +302,6 @@ void Load ::Execute(bool read)
 				else if (instruction == "CALL")
 				{
 					opcode = "011010";
-				}
-				else if (instruction == "INT")
-				{
-					opcode = "111000";
 				}
 				else if (instruction == "NEG")
 				{
@@ -345,49 +337,49 @@ void Load ::Execute(bool read)
 				Infile.get(temp2);
 				operand1 = std::string(1, temp1) + std::string(1, temp2);//operand 1 taken
 				
-				if (operand1 == "R0")
+				if (operand1 == "R0" || operand1 == "r0")
 				{
 					Outinstruction = opcode + "0000000000" ;
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R1")
+				else if (operand1 == "R1" || operand1 == "r1")
 				{
 					Outinstruction = opcode + "0010000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R2")
+				else if (operand1 == "R2" || operand1 == "r2")
 				{
 					Outinstruction = opcode + "0100000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R3")
+				else if (operand1 == "R3" || operand1 == "r3")
 				{
 					Outinstruction = opcode + "0110000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R4")
+				else if (operand1 == "R4" || operand1 == "r4")
 				{
 					Outinstruction = opcode + "1000000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R5")
+				else if (operand1 == "R5" || operand1 == "r5")
 				{
 					Outinstruction = opcode + "1010000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R6")
+				else if (operand1 == "R6" || operand1 == "r6")
 				{
 					Outinstruction = opcode + "1100000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R7")
+				else if (operand1 == "R7" || operand1 == "r7")
 				{
 					Outinstruction = opcode + "1110000000";
 					outFile << Outinstruction;
 				}
 			}
 			////////////////////ZERO OPERAND//////////////////////////////
-			else if (instruction == "NOP" || instruction == "RET" || instruction == "RTI" || instruction == "RESET")
+			else if (instruction == "NOP" || instruction == "RET" || instruction == "RTI" || instruction == "RESET" || instruction == "INT" )
 			{
 
 
@@ -396,23 +388,28 @@ void Load ::Execute(bool read)
 			outFile<<"\n";
 				if (instruction == "NOP")
 				{
-					opcode = "011000";
+					opcode = "000000";
 				}
 				else if (instruction == "RET")
 				{
-					opcode = "011001";
+					opcode = "011011";
 				}
 				else if (instruction == "RTI")
 				{
-					opcode = "011010";
+					opcode = "011100";
 				}
 				else if (instruction == "RESET")
+				{
+					opcode = "111111";
+				}
+				else if (instruction == "INT")
 				{
 					opcode = "111000";
 				}
 				Outinstruction = opcode + "0000000000";
 				outFile << Outinstruction;
 			}
+			outFile << '\n';
 		}
 	}
 
