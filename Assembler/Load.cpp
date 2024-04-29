@@ -3,6 +3,7 @@
 #include<fstream>
 #include <string>
 #include<iostream>
+#include <algorithm>
 using namespace std;
 
 string Load::BinaryOperands(int RegNumber) {
@@ -26,7 +27,16 @@ string Load::BinaryOperands(int RegNumber) {
 	}
 	return binary;
 }
+std::string toUpperCase(const std::string& str)
+{
+	std::string result = str;
 
+	transform(result.begin(), result.end(), result.begin(), [](unsigned char c) 
+	{
+		return std::toupper(c);
+	});
+	return result;
+}
 string Load ::ImmediateValueBinary(int Imm) {
 	std::string binary = "";
 
@@ -54,14 +64,11 @@ string Load ::ImmediateValueBinary(int Imm) {
 	return binary;
 }
 
-
-
-
-void Load ::Execute(bool read)
+void Load::Execute(bool read)
 {
 	string line;
 	int cnt; // count of figures
-	string opcode; 
+	string opcode;
 	string operand1;
 	string operand2;
 	string operand3;
@@ -72,17 +79,17 @@ void Load ::Execute(bool read)
 	ofstream outFile("Out.txt", ios::out);
 	if (Infile.fail()) //if file name is invaild
 	{
-		cout <<"File didn't successfully open";
+		cout << "File didn't successfully open";
 		return;
 	}
 	else
 	{
 		cout << "File Opened";
 		while (!Infile.eof())
-		{	
+		{
 			string instruction; //instruction
 			Infile >> instruction;
-			std::string toUpperCase(instruction);
+			instruction = toUpperCase(instruction);
 			if (instruction == "SWAP" || instruction == "ADD" || instruction == "XOR"
 				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD" || instruction == "STD")
 				//////////////// THREE OPERANDS/////////////////////
@@ -158,7 +165,7 @@ void Load ::Execute(bool read)
 
 
 				if (instruction == "ADDI" || instruction == "SUBI")
-				{				
+				{
 
 					//////////////Reading Immediate value///////////////
 
@@ -253,6 +260,30 @@ void Load ::Execute(bool read)
 			////////////////////////TWO OPERAND////////////////////////////////
 			else if (instruction == "MOV" || instruction == "SWAP" || instruction == "CMP" || instruction == "LDM" || instruction == "STD")
 			{
+				if (instruction == "MOV")
+				{
+					opcode = "001000";
+					outFile << opcode;
+				}
+				else if (instruction == "SWAP")
+				{
+					opcode = "001001";
+					outFile << opcode;
+				}
+				else if (instruction == "LDM")
+				{
+					opcode = "110010";
+					outFile << opcode;
+
+				}
+				else if (instruction == "CMP")
+				{
+					opcode = "001111";
+					outFile << opcode;
+					outFile << "0000";
+				}
+
+
 				char temp1;
 				char temp2;
 				Infile.get(temp1);
@@ -262,7 +293,10 @@ void Load ::Execute(bool read)
 					Infile.get(temp1);
 				}
 				Infile.get(temp2);
-				operand1 = std::string(1, temp1) + std::string(1, temp2);//operand 1 taken
+				///////////Taking Operand 1//////////////////
+				operand1 = BinaryOperands(temp2 - '0');
+				outFile << operand1;
+
 				Infile.get(temp1);
 				while ((temp1 == ' ' || temp1 == ','))
 				{
@@ -271,30 +305,20 @@ void Load ::Execute(bool read)
 				}
 
 				Infile.get(temp2);
-				operand2 = std::string(1, temp1) + std::string(1, temp2);
-				if (instruction == "MOV")
 
-				{
-					opcode = "001000";
-					outFile<<opcode;
-				}
-				else if(instruction=="SWAP")
-				{
-					opcode = "001001";
-					outFile << opcode;
-				}
-				else if (instruction == "ADDI")
-				{
-					opcode = "101010";
-				}
-				else if (instruction == "SUBI")
+				///////////////Taking Operand 2//////////////
+
+				operand2 = BinaryOperands(temp2 - '0');
+				outFile << operand2;
 
 				{
 					opcode = "101011";
 				}
 			}
 			//////////////////////ONE OPERAND//////////////////////////////
-			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "INT" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" || instruction == "DEC" || instruction == "OUT" || instruction == "IN")
+			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" 
+					|| instruction == "DEC" || instruction == "OUT" || instruction == "IN" || instruction == "POP" || instruction == "PUSH" 
+					|| instruction == "PROTECT" || instruction == "FREE")
 			{
 				//////////////Decoding Instrcution///////////////
 				if (instruction == "JZ")
@@ -308,10 +332,6 @@ void Load ::Execute(bool read)
 				else if (instruction == "CALL")
 				{
 					opcode = "011010";
-				}
-				else if (instruction == "INT")
-				{
-					opcode = "111000";
 				}
 				else if (instruction == "NEG")
 				{
@@ -337,6 +357,22 @@ void Load ::Execute(bool read)
 				{
 					opcode = "000111";
 				}
+				else if (instruction == "POP")
+				{
+					opcode = "010001";
+				}
+				else if (instruction == "PUSH")
+				{
+					opcode = "010000";
+				}
+				else if (instruction == "PROTECT")
+				{
+					opcode = "010101";
+				}
+				else if (instruction == "FREE")
+				{
+					opcode = "010110";
+				}
 				char temp1;
 				char temp2;
 				Infile.get(temp1);
@@ -346,96 +382,75 @@ void Load ::Execute(bool read)
 				}
 				Infile.get(temp2);
 				operand1 = std::string(1, temp1) + std::string(1, temp2);//operand 1 taken
-				
-				if (operand1 == "R0")
+
+				if (operand1 == "R0" || operand1 == "r0")
 				{
-					Outinstruction = opcode + "0000000000" ;
+					Outinstruction = opcode + "0000000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R1")
+				else if (operand1 == "R1" || operand1 == "r1")
 				{
 					Outinstruction = opcode + "0010000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R2")
+				else if (operand1 == "R2" || operand1 == "r2")
 				{
 					Outinstruction = opcode + "0100000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R3")
+				else if (operand1 == "R3" || operand1 == "r3")
 				{
 					Outinstruction = opcode + "0110000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R4")
+				else if (operand1 == "R4" || operand1 == "r4")
 				{
 					Outinstruction = opcode + "1000000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R5")
+				else if (operand1 == "R5" || operand1 == "r5")
 				{
 					Outinstruction = opcode + "1010000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R6")
+				else if (operand1 == "R6" || operand1 == "r6")
 				{
 					Outinstruction = opcode + "1100000000";
 					outFile << Outinstruction;
 				}
-				else if (operand1 == "R7")
+				else if (operand1 == "R7" || operand1 == "r7")
 				{
 					Outinstruction = opcode + "1110000000";
 					outFile << Outinstruction;
 				}
 			}
 			////////////////////ZERO OPERAND//////////////////////////////
-			else if (instruction == "NOP" || instruction == "RET" || instruction == "RTI" || instruction == "RESET")
+			else if (instruction == "NOP" || instruction == "RET" || instruction == "RTI" || instruction == "RESET" || instruction == "INT")
 			{
 				if (instruction == "NOP")
 				{
-					opcode = "011000";
+					opcode = "000000";
 				}
 				else if (instruction == "RET")
 				{
-					opcode = "011001";
+					opcode = "011011";
 				}
 				else if (instruction == "RTI")
 				{
-					opcode = "011010";
+					opcode = "011100";
 				}
 				else if (instruction == "RESET")
+				{
+					opcode = "111111";
+				}
+				else if (instruction == "INT")
 				{
 					opcode = "111000";
 				}
 				Outinstruction = opcode + "0000000000";
 				outFile << Outinstruction;
 			}
+			outFile << '\n';
 		}
 	}
-};	
-
-//reads fill clr
-	   ////////////Set draw color
-
-	   ////////////Set fill color
-
-	   //// Read fig count
-		//Infile >> cnt;
-		//outFile.close();
-		//identify figures
-		/*for (int i = 0; i < cnt; i++)
-		{
-			Infile >> type;
-			if (type == "Rectangle")
-				myfig = new CRectangle;
-			if (type == "Circle")
-				myfig = new CCircle;
-			if (type == "Triangle")
-				myfig = new CTriangle;
-			if (type == "Square")
-				myfig = new CSquare;
-			if (type == "Hexagon")
-				myfig = new CHex;
-			myfig->Load(Infile);
-			pManager->AddF(myfig);
-		}*/
+};
