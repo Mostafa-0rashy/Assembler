@@ -11,12 +11,13 @@ string Load::BinaryOperands(int RegNumber) {
 	if (RegNumber == 0) {
 		binary = "000";
 	}
-	else {
-		while (RegNumber > 0) {
-			binary = std::to_string(RegNumber % 2) + binary;
-			RegNumber /= 2;
+	else if (RegNumber>0) {
+		for (int i = 2; i >= 0; i--) {
+			binary = std::to_string(RegNumber & 1) + binary;
+			RegNumber >>= 1;
 		}
 	}
+	
 	return binary;
 }
 std::string toUpperCase(const std::string& str)
@@ -75,7 +76,7 @@ string Load ::ImmediateValueBinary(int Imm) {
 	return binary;
 }
 
-void Load ::Execute(bool read)
+void Load::Execute(bool read)
 {
 	string line;
 	int cnt; // count of figures
@@ -101,17 +102,12 @@ void Load ::Execute(bool read)
 			string instruction; //instruction
 			Infile >> instruction;
 			instruction = toUpperCase(instruction);
-			if (instruction == "SWAP" || instruction == "ADD" || instruction == "XOR"
+			if (instruction == "ADD" || instruction == "XOR"
 				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD")
 				//////////////// THREE OPERANDS/////////////////////
 			{
 				//////////////Decoding Instrcution///////////////
-				if (instruction == "SWAP") {
-
-					opcode = "001001";
-					outFile << opcode;
-				}
-				else if (instruction == "ADD") {
+				if (instruction == "ADD") {
 
 					opcode = "001010";
 					outFile << opcode;
@@ -169,7 +165,7 @@ void Load ::Execute(bool read)
 
 
 				if (instruction == "ADDI" || instruction == "SUBI")
-				{				
+				{
 
 					//////////////Reading Immediate value///////////////
 
@@ -255,37 +251,66 @@ void Load ::Execute(bool read)
 					outFile << "0000";
 				}
 
-
-				char temp1;
-				char temp2;
-				Infile.get(temp1);
-				while (temp1 == ' ')
+				if (instruction == "LDM")
 				{
+					char temp1;
+					char temp2;
+					Infile.get(temp1);
+					while (temp1 == ' ')
+					{
+
+						Infile.get(temp1);
+					}
+					Infile.get(temp2);
+					///////////Taking Operand 1//////////////////
+					operand1 = BinaryOperands(temp2 - '0');
+					outFile << operand1;
+					outFile << "0000000";
+					outFile << "\n";
+
+					string imm1;
+					Infile.get(temp1);
+					Infile >> imm1;
+					imm1 = ImmediateValueBinary(std::stoi(imm1));
+					outFile << imm1;
+				}
+				else
+				{
+					char temp1;
+					char temp2;
+					Infile.get(temp1);
+					while (temp1 == ' ')
+					{
+
+						Infile.get(temp1);
+					}
+					Infile.get(temp2);
+					///////////Taking Operand 1//////////////////
+					operand1 = BinaryOperands(temp2 - '0');
+					outFile << operand1;
 
 					Infile.get(temp1);
+					while ((temp1 == ' ' || temp1 == ','))
+					{
+
+						Infile.get(temp1);
+					}
+
+
+					Infile.get(temp2);
+
+					///////////////Taking Operand 2//////////////
+
+					operand2 = BinaryOperands(temp2 - '0');
+					outFile << operand2;
 				}
-				Infile.get(temp2);
-				///////////Taking Operand 1//////////////////
-				operand1 = BinaryOperands(temp2 - '0');
-				outFile << operand1;
+					if (instruction != "CMP" || instruction!="LDM")
+					{
+						outFile << "0000";
+					}
 
-				Infile.get(temp1);
-				while ((temp1 == ' ' || temp1 == ','))
-				{
+				
 
-					Infile.get(temp1);
-				}
-
-				Infile.get(temp2);
-
-				///////////////Taking Operand 2//////////////
-
-				operand2 = BinaryOperands(temp2 - '0');
-				outFile << operand2;
-
-				{
-					opcode = "101011";
-				}
 			}
 			//////////////////////ONE OPERAND//////////////////////////////
 			else if (instruction == "JZ" || instruction == "JMP" || instruction == "CALL" || instruction == "NEG" || instruction == "NOT" || instruction == "INC" || instruction == "DEC" || instruction == "OUT" || instruction == "IN")
@@ -336,10 +361,10 @@ void Load ::Execute(bool read)
 				}
 				Infile.get(temp2);
 				operand1 = std::string(1, temp1) + std::string(1, temp2);//operand 1 taken
-				
+
 				if (operand1 == "R0" || operand1 == "r0")
 				{
-					Outinstruction = opcode + "0000000000" ;
+					Outinstruction = opcode + "0000000000";
 					outFile << Outinstruction;
 				}
 				else if (operand1 == "R1" || operand1 == "r1")
@@ -379,13 +404,12 @@ void Load ::Execute(bool read)
 				}
 			}
 			////////////////////ZERO OPERAND//////////////////////////////
-			else if (instruction == "NOP" || instruction == "RET" || instruction == "RTI" || instruction == "RESET" || instruction == "INT" )
+			else if (instruction == "NOP" || instruction == "RET" || instruction == "RTI" || instruction == "RESET" || instruction == "INT")
 			{
 
 
 
-			}
-			outFile<<"\n";
+
 				if (instruction == "NOP")
 				{
 					opcode = "000000";
@@ -409,10 +433,11 @@ void Load ::Execute(bool read)
 				Outinstruction = opcode + "0000000000";
 				outFile << Outinstruction;
 			}
+
 			outFile << '\n';
 		}
 	}
-
+}
 
 //reads fill clr
 	   ////////////Set draw color
