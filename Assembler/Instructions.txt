@@ -1,1 +1,1 @@
-ADDI R0,15
+NEG R0
