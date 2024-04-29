@@ -18,6 +18,7 @@ void Load ::Execute(bool read)
 	string immValue;
 	ifstream Infile;
 	Infile.open("Instructions.txt", ios::in);
+	ofstream outFile("Out.txt", ios::out);
 	if (Infile.fail()) //if file name is invaild
 	{
 		cout <<"File didn't successfully open";
@@ -28,8 +29,9 @@ void Load ::Execute(bool read)
 		cout << "File Opened";
 
 		while (!Infile.eof())
-		{
+		{	
 			Infile >> instruction;
+			std::string toUpperCase(instruction);
 			if (instruction == "SWAP" || instruction == "ADD" || instruction == "XOR"
 				|| instruction == "ADDI" || instruction == "SUB" || instruction == "SUBI" || instruction == "AND" || instruction == "OR" || instruction == "LDD")
 				//////////////// THREE OPERANDS/////////////////////
@@ -169,8 +171,24 @@ void Load ::Execute(bool read)
 
 				{
 					opcode = "001000";
-
+					outFile<<opcode;
 				}
+				else if(instruction=="SWAP")
+				{
+					opcode = "001001";
+					outFile << opcode;
+				}
+				else if (instruction == "ADDI")
+				{
+					opcode = "101010";
+				}
+				else if (instruction == "SUBI")
+
+				{
+					opcode = "101011";
+				}
+
+
 			}
 
 			//////////////////////ONE OPERAND//////////////////////////////
@@ -200,6 +218,7 @@ void Load ::Execute(bool read)
 
 	   //// Read fig count
 		Infile >> cnt;
+		outFile.close();
 		//identify figures
 		/*for (int i = 0; i < cnt; i++)
 		{
