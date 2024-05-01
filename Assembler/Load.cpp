@@ -30,7 +30,7 @@ std::string toUpperCase(const std::string& str)
 	});
 	return result;
 }
-string Load ::ImmediateValueBinary(int Imm) {
+string Load::ImmediateValueBinary(int Imm) {
 	std::string binary = "";
 	int Immabs = std::abs(Imm);
 	// Handle the case when the number is 0
@@ -43,27 +43,58 @@ string Load ::ImmediateValueBinary(int Imm) {
 			Immabs /= 2;
 		}
 	}
-
-	// Pad with zeros to ensure the binary string is 16 bits long
-	while (binary.length() < 15) {
-		binary = "0" + binary;
-	}
-	if (binary.length() == 15)
-	{
-		if (Imm> 0)
-		{
-			binary = "0" + binary;
-		}
-		else if (Imm < 0)
-		{
-			binary = "1" + binary;
-		}
-
-	}
-
 	return binary;
 }
+string Load::ImmediateValueHex(string hex) {
 
+	string binary[4];
+	string binarystring;
+	bool negative = 0;
+	if (hex[0] =='-')
+	{
+		negative = 1;
+
+		hex = hex.substr(1, hex.size() - 1);
+
+	}
+
+	if (hex.size() != 4)
+	{
+		int size = hex.size();
+		for (int i = 0; i < 4 - size; i++)
+		{
+			hex = "0" + hex;
+		}
+	}
+	for (int i = 0; i < hex.size(); i++)
+	{
+		char hexDigit = hex[i];
+		if (hexDigit == '0') binary[i] = "0000";
+		else if (hexDigit == '1') binary[i] = "0001";
+		else if (hexDigit == '2') binary[i] = "0010";
+		else if (hexDigit == '3') binary[i] = "0011";
+		else if (hexDigit == '4') binary[i] = "0100";
+		else if (hexDigit == '5') binary[i] = "0101";
+		else if (hexDigit == '6') binary[i] = "0110";
+		else if (hexDigit == '7') binary[i] = "0111";
+		else if (hexDigit == '8') binary[i] = "1000";
+		else if (hexDigit == '9') binary[i] = "1001";
+		else if (hexDigit == 'A' || hexDigit == 'a') binary[i] = "1010";
+		else if (hexDigit == 'B' || hexDigit == 'b') binary[i] = "1011";
+		else if (hexDigit == 'C' || hexDigit == 'c') binary[i] = "1100";
+		else if (hexDigit == 'D' || hexDigit == 'd') binary[i] = "1101";
+		else if (hexDigit == 'E' || hexDigit == 'e') binary[i] = "1110";
+		else if (hexDigit == 'F' || hexDigit == 'f') binary[i] = "1111";
+	}
+	
+	binarystring = binary[0] + binary[1] + binary[2] + binary[3];
+	if (negative)
+	{
+		binarystring[0] = '1'; //abcde
+	}
+	return binarystring;
+
+	}
 void Load::Execute(bool read)
 {
 	string line;
@@ -176,7 +207,8 @@ void Load::Execute(bool read)
 					string immvaluerest;
 					Infile >> immvaluerest;
 					immValue = immValue + immvaluerest;
-					immValue = ImmediateValueBinary(std::stoi(immValue));
+					//immValue = ImmediateValueBinary(std::stoi(immValue));
+					immValue = ImmediateValueHex(immValue);
 					outFile << immValue;
 
 
@@ -221,7 +253,7 @@ void Load::Execute(bool read)
 
 
 
-					immValue = ImmediateValueBinary(std::stoi(immValue));
+					immValue = ImmediateValueHex(immValue);
 					outFile << immValue;
 
 					Infile.get(temp1);
@@ -308,7 +340,7 @@ void Load::Execute(bool read)
 					string imm1;
 					Infile.get(temp1);
 					Infile >> imm1;
-					imm1 = ImmediateValueBinary(std::stoi(imm1));
+					imm1 = ImmediateValueHex(imm1);
 					outFile << imm1;
 				}
 				else
