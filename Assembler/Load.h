@@ -11,6 +11,6 @@ public:
 
 	string BinaryOperands(int RegNumber);
 	string ImmediateValueBinary(int Imm);
-	void Execute(bool read);
+	string ImmediateValueHex(string imm);
+	void Execute(bool read);
 };
-

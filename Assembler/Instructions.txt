@@ -1,1 +1,2 @@
 LDM r3,5
+Mov R3,R5
