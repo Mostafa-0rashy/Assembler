@@ -307,6 +307,7 @@ void Load::Execute(bool read)
 
 				}
 
+
 				if (instruction == "ADDI" || instruction == "SUBI")
 				{
 					//////////////Reading Operand2///////////////
@@ -391,7 +392,7 @@ void Load::Execute(bool read)
 						}
 					}
 				}
-				else
+				else 
 				{
 					//////////////Reading Operand2///////////////
 					Infile.get(temp1);
